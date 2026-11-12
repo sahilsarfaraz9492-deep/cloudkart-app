@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+	<head><title>CloudKart</title></head>
+	<body style="font-family:sans-serif;text-align:center;margin-top:80px">
+		  <h1>CloudKart Platform</h1>
+		    <p id="status">Checking backend...</p>
+		      <script>
+			          fetch("http://localhost:3000/health")
+				        .then(r => r.json())
+				        .then(d => document.getElementById("status").innerText = "Backend: " + d.status)
+				        .catch(() => document.getElementById("status").innerText = "Backend: down");
+				    </script>
+	</body>
+</html>

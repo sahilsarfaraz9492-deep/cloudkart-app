@@ -1,8 +1,8 @@
 pipeline {
   agent any
-    environment {
+  environment {
     IMAGE_TAG = "${BUILD_NUMBER}"
-    DOCKERHUB_USER = "sahilsarfaraz"
+    DOCKERHUB_USER = "your-dockerhub-username"
   }
   stages {
     stage('Checkout') {
@@ -21,6 +21,8 @@ pipeline {
           sleep 5
           docker exec test-backend-${BUILD_NUMBER} wget -qO- localhost:3000/health
         '''
+      }
+    }
     stage('Push Images') {
       steps {
         withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
@@ -34,7 +36,11 @@ pipeline {
         }
       }
     }
+  }
   post {
-    always { sh 'docker rm -f test-backend-${BUILD_NUMBER} || true' }
+    always {
+      sh 'docker rm -f test-backend-${BUILD_NUMBER} || true'
+      sh 'docker logout || true'
+    }
   }
 }

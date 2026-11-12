@@ -1,6 +1,9 @@
 pipeline {
   agent any
-  environment { IMAGE_TAG = "${BUILD_NUMBER}" }
+    environment {
+    IMAGE_TAG = "${BUILD_NUMBER}"
+    DOCKERHUB_USER = "sahilsarfaraz"
+  }
   stages {
     stage('Checkout') {
       steps { checkout scm }
@@ -18,9 +21,19 @@ pipeline {
           sleep 5
           docker exec test-backend-${BUILD_NUMBER} wget -qO- localhost:3000/health
         '''
+    stage('Push Images') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
+          sh '''
+            echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin
+            docker tag cloudkart-backend:${IMAGE_TAG} ${DOCKERHUB_USER}/cloudkart-backend:${IMAGE_TAG}
+            docker tag cloudkart-frontend:${IMAGE_TAG} ${DOCKERHUB_USER}/cloudkart-frontend:${IMAGE_TAG}
+            docker push ${DOCKERHUB_USER}/cloudkart-backend:${IMAGE_TAG}
+            docker push ${DOCKERHUB_USER}/cloudkart-frontend:${IMAGE_TAG}
+          '''
+        }
       }
     }
-  }
   post {
     always { sh 'docker rm -f test-backend-${BUILD_NUMBER} || true' }
   }

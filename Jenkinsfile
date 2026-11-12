@@ -28,10 +28,10 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
           sh '''
             echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin
-            docker tag cloudkart-backend:${IMAGE_TAG} ${DOCKERHUB_USER}/cloudkart-backend:${IMAGE_TAG}
-            docker tag cloudkart-frontend:${IMAGE_TAG} ${DOCKERHUB_USER}/cloudkart-frontend:${IMAGE_TAG}
-            docker push ${DOCKERHUB_USER}/cloudkart-backend:${IMAGE_TAG}
-            docker push ${DOCKERHUB_USER}/cloudkart-frontend:${IMAGE_TAG}
+            docker tag cloudkart-backend:${IMAGE_TAG} ${DH_USER}/cloudkart-backend:${IMAGE_TAG}
+            docker tag cloudkart-frontend:${IMAGE_TAG} ${DH_USER}/cloudkart-frontend:${IMAGE_TAG}
+            docker push ${DH_USER}/cloudkart-backend:${IMAGE_TAG}
+            docker push ${DH_USER}/cloudkart-frontend:${IMAGE_TAG}
           '''
         }
       }
